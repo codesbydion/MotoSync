@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports - MotoSync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="modern.css">
+</head>
+<body class="modern-page">
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo-link">
+      <div class="logo">
+        <span class="logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14M7 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm14 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 17l2-7h6l2 7M9 10l-2-3m8 3 2-3"/></svg>
+        </span>
+        <span class="logo-text"><strong>MotoSync</strong><small>Reports</small></span>
+      </div>
+    </a>
+    <nav class="nav-right">
+      <a href="maintenance.html">Maintenance</a>
+      <button class="btn-login" onclick="logout()">Logout</button>
+    </nav>
+  </div>
+</header>
+
+<main class="main-shell container">
+  <div class="summary-grid">
+    <div class="summary-card">
+      <h3>Total Cost</h3>
+      <h2 id="totalCost">0</h2>
+    </div>
+    <div class="summary-card">
+      <h3>Total Records</h3>
+      <h2 id="totalRecords">0</h2>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3>Service History</h3>
+    <button class="btn-login" onclick="exportCSV()">Export CSV</button>
+  </div>
+  <div id="reportList"></div>
+</main>
+
+<script>
+const API_BASE = window.location.protocol === "file:"
+  ? "http://127.0.0.1:5001/api"
+  : "/api";
+const token = localStorage.getItem("token") || localStorage.getItem("motosyncToken");
+
+if (!token) window.location.href = "login.html";
+
+const reportDiv = document.getElementById("reportList");
+const totalCostDiv = document.getElementById("totalCost");
+const totalRecordsDiv = document.getElementById("totalRecords");
+
+let allRecords = [];
+
+if (localStorage.getItem('theme') === 'light') {
+  document.documentElement.classList.add('light-theme');
+}
+
+function authHeaders() {
+  return { "Authorization": `Bearer ${token}` };
+}
+
+function vehicleLabel(v) {
+  if (!v) return "N/A";
+  return `${v.brand || ""} ${v.model || ""} (${v.registrationNo || "-"})`.trim();
+}
+
+async function loadReports() {
+  try {
+    const response = await fetch(`${API_BASE}/service-records`, {
+      headers: authHeaders()
+    });
+
+    const records = await response.json();
+    allRecords = records;
+
+    if (!response.ok) {
+      reportDiv.innerHTML = '<div class="empty-state">Failed to load reports.</div>';
+      return;
+    }
+
+    if (!records.length) {
+      reportDiv.innerHTML = '<div class="empty-state">No service records found.</div>';
+      totalCostDiv.innerText = "0";
+      totalRecordsDiv.innerText = "0";
+      return;
+    }
+
+    let total = 0;
+    reportDiv.innerHTML = "";
+
+    records.forEach((record) => {
+      total += Number(record.totalCost || 0);
+
+      reportDiv.innerHTML += `
+        <div class="report-card">
+          <h4>${record.serviceType?.name || "Service"}</h4>
+          <p><strong>Vehicle:</strong> ${vehicleLabel(record.vehicle)}</p>
+          <p><strong>Provider:</strong> ${record.provider?.providerName || "N/A"}</p>
+          <p><strong>Cost:</strong> ${record.totalCost || 0}</p>
+          <p><strong>Date:</strong> ${record.serviceDate ? new Date(record.serviceDate).toLocaleDateString() : "-"}</p>
+          <p><strong>Mileage:</strong> ${record.mileageAtService ?? "-"}</p>
+          <p><strong>Remarks:</strong> ${record.remarks || "-"}</p>
+          <button class="delete-btn" data-id="${record._id}">Delete</button>
+        </div>
+      `;
+    });
+
+    totalCostDiv.innerText = String(total);
+    totalRecordsDiv.innerText = String(records.length);
+  } catch (error) {
+    console.error("Report load error:", error);
+    reportDiv.innerHTML = '<div class="empty-state">Server error. Please try again.</div>';
+  }
+}
+
+reportDiv.addEventListener("click", async function (e) {
+  const id = e.target.dataset.id;
+  if (!id) return;
+
+  if (!confirm("Are you sure you want to delete this record?")) return;
+
+  try {
+    const response = await fetch(`${API_BASE}/service-records/${id}`, {
+      method: "DELETE",
+      headers: authHeaders()
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      alert(data.message || "Failed to delete record.");
+      return;
+    }
+
+    loadReports();
+  } catch (error) {
+    alert("Failed to delete record.");
+  }
+});
+
+function exportCSV() {
+  if (!allRecords || !allRecords.length) {
+    alert("No records to export.");
+    return;
+  }
+
+  const headers = ["Service Type", "Vehicle", "Provider", "Cost", "Date", "Mileage", "Remarks"];
+  const rows = allRecords.map(r => [
+    `"${r.serviceType?.name || 'Service'}"`,
+    `"${vehicleLabel(r.vehicle)}"`,
+    `"${r.provider?.providerName || 'N/A'}"`,
+    r.totalCost || 0,
+    r.serviceDate ? new Date(r.serviceDate).toLocaleDateString() : "-",
+    r.mileageAtService || "-",
+    `"${(r.remarks || "").replace(/"/g, '""')}"`
+  ]);
+
+  const csvContent = [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "motosync_report.csv";
+  a.click();
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("motosyncToken");
+  localStorage.removeItem("user");
+  localStorage.removeItem("motosyncUser");
+  window.location.href = "login.html";
+}
+
+loadReports();
+</script>
+<script src="ui.js"></script>
+</body>
+</html>

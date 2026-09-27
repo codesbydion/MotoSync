@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - MotoSync</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="modern.css" />
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="dashboard-header-inner">
+      <a href="index.html" class="dashboard-logo-link">
+        <div class="dashboard-logo">
+          <span class="dashboard-logo-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14M7 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm14 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 17l2-7h6l2 7M9 10l-2-3m8 3 2-3"/></svg>
+          </span>
+          <div class="dashboard-logo-text">
+            <strong>MotoSync</strong><br />
+            <small>Admin Dashboard</small>
+          </div>
+        </div>
+      </a>
+
+      <div class="dashboard-header-actions">
+        <input type="text" id="searchUser" placeholder="Search users..." class="dashboard-search" aria-label="Search users" autocomplete="off" />
+        <span id="adminRoleBadge" class="dashboard-role-badge">Role: Admin</span>
+        <button id="addAdmin" class="dashboard-btn-add">Add Admin</button>
+        <button id="addUser" class="dashboard-btn-add">Add User</button>
+        <button class="dashboard-btn-logout" onclick="adminLogout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    <div class="admin-stats">
+      <div class="stat-card">
+        <div class="stat-icon">Users</div>
+        <div class="stat-content">
+          <p>Total Users</p>
+          <h3 id="statTotalUsers">0</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">Services</div>
+        <div class="stat-content">
+          <p>Total Services</p>
+          <h3 id="statTotalServices">0</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">Revenue</div>
+        <div class="stat-content">
+          <p>Total Revenue</p>
+          <h3 id="statTotalRevenue">0</h3>
+        </div>
+      </div>
+    </div>
+
+    <section class="dashboard-section section-users">
+      <div class="section-header">
+        <h2 class="section-title">Registered Users</h2>
+      </div>
+      <div class="dashboard-card">
+        <table id="userTable" class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Gender</th>
+              <th>Vehicles</th>
+              <th>Registration Nos</th>
+              <th>Fuel Types</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="dashboard-section section-admins">
+      <div class="section-header">
+        <h2 class="section-title">Registered Admins</h2>
+      </div>
+      <div class="dashboard-card">
+        <table id="adminTable" class="dashboard-table dashboard-table-compact">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Service Types</h2>
+        <button id="addServiceType" class="dashboard-btn-add">Add Service Type</button>
+      </div>
+      <div class="dashboard-card">
+        <table id="serviceTypeTable" class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Due Days</th>
+              <th>Due Mileage</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Service Providers</h2>
+        <button id="addServiceProvider" class="dashboard-btn-add">Add Service Provider</button>
+      </div>
+      <div class="dashboard-card">
+        <table id="serviceProviderTable" class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Provider</th>
+              <th>Type</th>
+              <th>Address</th>
+              <th>Contact</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="dashboard-section section-alerts">
+      <div class="section-header">
+        <h2 class="section-title">Maintenance Alerts</h2>
+        <button id="runChecks" class="dashboard-btn-add" style="background: var(--primary-strong);">Run Checks & Send Emails</button>
+      </div>
+      <div class="dashboard-card">
+        <table id="alertTable" class="dashboard-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Vehicle</th>
+              <th>Service Type</th>
+              <th>Due Date</th>
+              <th>Due Mileage</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2026 MotoSync</p>
+  </footer>
+
+  <!-- Add/Edit Service Provider Modal -->
+  <div id="providerModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="providerModalTitle">Add Service Provider</h3>
+        <button class="modal-close" onclick="closeProviderModal()">&times;</button>
+      </div>
+      <form id="providerForm" class="form-grid">
+        <input type="hidden" id="providerId">
+        <div class="full-row">
+          <label for="providerName">Provider Name</label>
+          <input type="text" id="providerName" required>
+        </div>
+        <div class="full-row">
+          <label for="providerType">Type</label>
+          <select id="providerType">
+            <option value="Third Party">Third Party</option>
+            <option value="Authorized">Authorized</option>
+          </select>
+        </div>
+        <div class="full-row">
+          <label for="providerAddress">Address</label>
+          <input type="text" id="providerAddress">
+        </div>
+        <div>
+          <label for="providerContact">Contact</label>
+          <input type="text" id="providerContact">
+        </div>
+        <div>
+          <label for="providerEmail">Email</label>
+          <input type="email" id="providerEmail">
+        </div>
+        <div class="full-row">
+          <button type="submit" class="dashboard-btn-add" style="width: 100%">Save Provider</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="dashboard-toast"></div>
+
+  <script src="admin-dashboard.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>

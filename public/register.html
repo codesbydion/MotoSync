@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - MotoSync</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="modern.css" />
+</head>
+<body class="modern-page">
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo-link">
+        <div class="logo">
+          <span class="logo-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 17h14M7 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm14 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 17l2-7h6l2 7M9 10l-2-3m8 3 2-3"/>
+            </svg>
+          </span>
+          <span class="logo-text">
+            <strong>MotoSync</strong>
+            <small>Vehicle Maintenance & Service Tracker</small>
+          </span>
+        </div>
+      </a>
+
+      <nav class="nav-right">
+        <a href="index.html">Home</a>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#how-it-works">Process</a>
+        <a href="about.html">About</a>
+        <a href="login.html" class="btn-login">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="register-container container">
+    <div class="register-card">
+      <h2>Create Your MotoSync Account</h2>
+
+      <form id="registerForm" novalidate>
+        <div class="register-grid">
+          <div>
+            <label for="username">User ID</label>
+            <input id="username" type="text" placeholder="5 to 12 characters" required autocomplete="username" />
+          </div>
+
+          <div>
+            <label for="fullname">Name</label>
+            <input id="fullname" type="text" placeholder="Enter full name" required autocomplete="name" />
+          </div>
+
+          <div>
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="Valid email" required autocomplete="email" />
+          </div>
+
+          <div>
+            <label for="phone">Phone Number</label>
+            <input id="phone" type="tel" placeholder="10-digit number" autocomplete="tel" />
+          </div>
+
+          <div>
+            <label for="password">Password</label>
+            <div class="password-wrap" data-visible="false">
+              <input
+                id="password"
+                type="password"
+                placeholder="Min 8 chars, Aa1@"
+                minlength="8"
+                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$"
+                title="Use at least 8 characters with uppercase, lowercase, number, and symbol."
+                required
+                autocomplete="new-password"
+              />
+              <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false">
+                <svg class="pw-icon pw-icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="pw-icon pw-icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 3l18 18"></path>
+                  <path d="M10.6 10.6a3 3 0 0 0 4.24 4.24"></path>
+                  <path d="M6.2 6.2C4.1 7.7 2.5 10.2 2.5 12c0 0 3.5 7 9.5 7 1.7 0 3.2-.4 4.5-1.1"></path>
+                  <path d="M9.3 4.2A9.4 9.4 0 0 1 12 5c6 0 9.5 7 9.5 7a18.2 18.2 0 0 1-3.1 4.2"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="password-wrap" data-visible="false">
+              <input id="confirmPassword" type="password" placeholder="Re-enter password" required autocomplete="new-password" />
+              <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false">
+                <svg class="pw-icon pw-icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="pw-icon pw-icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 3l18 18"></path>
+                  <path d="M10.6 10.6a3 3 0 0 0 4.24 4.24"></path>
+                  <path d="M6.2 6.2C4.1 7.7 2.5 10.2 2.5 12c0 0 3.5 7 9.5 7 1.7 0 3.2-.4 4.5-1.1"></path>
+                  <path d="M9.3 4.2A9.4 9.4 0 0 1 12 5c6 0 9.5 7 9.5 7a18.2 18.2 0 0 1-3.1 4.2"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label>Gender</label>
+            <div class="radio-group">
+              <label><input type="radio" name="gender" value="Male" /> Male</label>
+              <label><input type="radio" name="gender" value="Female" /> Female</label>
+            </div>
+          </div>
+
+          <div class="full-row">
+            <label for="address">Address</label>
+            <textarea id="address" rows="3" placeholder="Enter address" autocomplete="street-address"></textarea>
+          </div>
+
+          <div class="full-row">
+            <h3>Vehicle Details</h3>
+          </div>
+
+          <div>
+            <label for="vehicleType">Vehicle Type</label>
+            <select id="vehicleType">
+              <option value="">Select</option>
+              <option>Bike</option>
+              <option>Car</option>
+              <option>SUV</option>
+              <option>Scooter</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="fuelType">Fuel Type</label>
+            <select id="fuelType">
+              <option value="">Select</option>
+              <option>Petrol</option>
+              <option>Diesel</option>
+              <option>Electric</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="vehicleBrand">Vehicle Brand</label>
+            <input type="text" id="vehicleBrand" placeholder="Honda, Hyundai" />
+          </div>
+
+          <div>
+            <label for="vehicleModel">Vehicle Model</label>
+            <input type="text" id="vehicleModel" placeholder="Activa, i20" />
+          </div>
+
+          <div>
+            <label for="vehicleYear">Purchase Year</label>
+            <input type="number" id="vehicleYear" placeholder="e.g. 2022" min="1900" max="2100" inputmode="numeric" />
+          </div>
+
+          <div>
+            <label for="vehicleNumber">Registration Number</label>
+            <input type="text" id="vehicleNumber" placeholder="KL-07-AB-1234" />
+          </div>
+
+          <div>
+            <label>Transmission Type</label>
+            <div class="radio-group">
+              <label><input type="radio" name="transmission" value="Manual" /> Manual</label>
+              <label><input type="radio" name="transmission" value="Automatic" /> Automatic</label>
+            </div>
+          </div>
+
+          <div class="full-row">
+            <label>Vehicle Features</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" value="ABS" /> ABS</label>
+              <label><input type="checkbox" value="Air Conditioning" /> Air Conditioning</label>
+              <label><input type="checkbox" value="GPS" /> GPS</label>
+              <label><input type="checkbox" value="Airbags" /> Airbags</label>
+            </div>
+          </div>
+
+          <div class="full-row">
+            <label>Service Reminder Preference</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" value="Email" /> Email</label>
+              <label><input type="checkbox" value="SMS" /> SMS</label>
+              <label><input type="checkbox" value="App Notification" /> App Notification</label>
+            </div>
+          </div>
+
+          <div class="full-row">
+            <button type="submit" class="register-btn">Create Account</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <footer class="footer">
+    <p>&copy; 2026 MotoSync. All Rights Reserved.</p>
+  </footer>
+
+  <script src="ui.js"></script>
+  <script src="register.js"></script>
+</body>
+</html>

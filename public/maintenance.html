@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maintenance - MotoSync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="modern.css">
+</head>
+<body class="modern-page">
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo-link">
+      <div class="logo">
+        <span class="logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14M7 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm14 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 17l2-7h6l2 7M9 10l-2-3m8 3 2-3"/></svg>
+        </span>
+        <span class="logo-text"><strong>MotoSync</strong><small>Maintenance Workspace</small></span>
+      </div>
+    </a>
+    <nav class="nav-right">
+      <a href="index.html">Home</a>
+      <a href="reports.html">Reports</a>
+      <button class="btn-login" onclick="logout()">Logout</button>
+    </nav>
+  </div>
+</header>
+
+<main class="main-shell container">
+  <div class="card">
+    <h3 id="formTitle">Add Service Record</h3>
+    <form id="maintenanceForm" class="form-grid">
+      <select id="vehicleId" required aria-label="Select Vehicle">
+        <option value="">Select Vehicle</option>
+      </select>
+
+      <select id="serviceTypeId" required aria-label="Select Service Type">
+        <option value="">Select Service Type</option>
+        <option value="general-service">General Service</option>
+        <option value="oil-change">Oil Change</option>
+        <option value="brake-service">Brake Service</option>
+        <option value="tire-rotation">Tire Rotation</option>
+        <option value="battery-replacement">Battery Replacement</option>
+      </select>
+
+      <select id="providerId" aria-label="Select Service Provider">
+        <option value="">Select Service Provider (Optional)</option>
+        <option value="authorized-center">Authorized Service Center</option>
+        <option value="local-garage">Local Garage</option>
+        <option value="mobile-mechanic">Mobile Mechanic</option>
+        <option value="self-service">Self Service</option>
+      </select>
+
+      <input type="number" id="cost" placeholder="Cost" required aria-label="Cost">
+      <input type="number" id="mileageAtService" placeholder="Mileage At Service (Optional)" aria-label="Mileage At Service">
+      <input type="date" id="date" required aria-label="Service Date">
+      <input type="text" id="remarks" placeholder="Remarks (Optional)" aria-label="Remarks">
+
+      <button type="submit" class="primary-btn">Save Record</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Your Service Records</h3>
+    <div id="recordList"></div>
+  </div>
+</main>
+
+<script>
+const API_BASE = window.location.protocol === "file:"
+  ? "http://127.0.0.1:5001/api"
+  : "/api";
+const token = localStorage.getItem("token") || localStorage.getItem("motosyncToken");
+
+if (!token) window.location.href = "login.html";
+
+let editId = null;
+
+const form = document.getElementById("maintenanceForm");
+const recordList = document.getElementById("recordList");
+const formTitle = document.getElementById("formTitle");
+const vehicleSelect = document.getElementById("vehicleId");
+const serviceTypeSelect = document.getElementById("serviceTypeId");
+const providerSelect = document.getElementById("providerId");
+
+function authHeaders(contentType = false) {
+  const headers = { "Authorization": `Bearer ${token}` };
+  if (contentType) headers["Content-Type"] = "application/json";
+  return headers;
+}
+
+function vehicleLabel(v) {
+  return `${v.brand || ""} ${v.model || ""} (${v.registrationNo || "-"})`.trim();
+}
+
+async function loadVehicles() {
+  const response = await fetch(`${API_BASE}/vehicles`, { headers: authHeaders() });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || "Failed to load vehicles");
+
+  vehicleSelect.innerHTML = '<option value="">Select Vehicle</option>';
+  data.forEach((v) => {
+    vehicleSelect.innerHTML += `<option value="${v._id}">${vehicleLabel(v)}</option>`;
+  });
+}
+
+async function loadServiceTypes() {
+  const response = await fetch(`${API_BASE}/service-types`, { headers: authHeaders() });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || "Failed to load service types");
+  const serviceTypes = asArray(data);
+
+  serviceTypeSelect.innerHTML =
+    '<option value="">Select Service Type</option>' +
+    '<option value="general-service">General Service</option>' +
+    '<option value="oil-change">Oil Change</option>' +
+    '<option value="brake-service">Brake Service</option>' +
+    '<option value="tire-rotation">Tire Rotation</option>' +
+    '<option value="battery-replacement">Battery Replacement</option>';
+  serviceTypes.forEach((t) => {
+    serviceTypeSelect.innerHTML += `<option value="${t._id}">${t.name}</option>`;
+  });
+}
+
+async function loadProviders() {
+  const response = await fetch(`${API_BASE}/service-providers`, { headers: authHeaders() });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || "Failed to load providers");
+  const providers = asArray(data);
+
+  providerSelect.innerHTML =
+    '<option value="">Select Service Provider (Optional)</option>' +
+    '<option value="authorized-center">Authorized Service Center</option>' +
+    '<option value="local-garage">Local Garage</option>' +
+    '<option value="mobile-mechanic">Mobile Mechanic</option>' +
+    '<option value="self-service">Self Service</option>';
+  providers.forEach((p) => {
+    providerSelect.innerHTML += `<option value="${p._id}">${p.providerName}</option>`;
+  });
+}
+
+async function loadRecords() {
+  try {
+    const response = await fetch(`${API_BASE}/service-records`, { headers: authHeaders() });
+    const records = await response.json();
+
+    if (!response.ok) {
+      recordList.innerHTML = "<p>Failed to load records.</p>";
+      return;
+    }
+
+    if (!records.length) {
+      recordList.innerHTML = "<p>No records found.</p>";
+      return;
+    }
+
+    recordList.innerHTML = "";
+
+    records.forEach((record) => {
+      const card = document.createElement("div");
+      card.className = "record-card";
+
+      const serviceTypeText = record.serviceType?.name || "N/A";
+      const vehicleText = record.vehicle ? vehicleLabel(record.vehicle) : "N/A";
+      const providerText = record.provider?.providerName || "N/A";
+      const dateText = record.serviceDate ? new Date(record.serviceDate).toISOString().substring(0, 10) : "-";
+
+      card.innerHTML = `
+        <strong>${serviceTypeText}</strong><br>
+        Vehicle: ${vehicleText}<br>
+        Provider: ${providerText}<br>
+        Cost: ${record.totalCost ?? "-"}<br>
+        Date: ${dateText}<br>
+        Mileage: ${record.mileageAtService ?? "-"}<br>
+        Remarks: ${record.remarks || "-"}<br><br>
+        <button class="edit-btn" data-id="${record._id}">Edit</button>
+        <button class="delete-btn" data-id="${record._id}">Delete</button>
+      `;
+
+      recordList.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Load error:", error);
+    recordList.innerHTML = "<p>Server error.</p>";
+  }
+}
+
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const vehicleId = vehicleSelect.value;
+  const serviceTypeId = serviceTypeSelect.value;
+  const providerId = providerSelect.value;
+  const totalCost = Number(document.getElementById("cost").value);
+  const serviceDate = document.getElementById("date").value;
+  const mileageRaw = document.getElementById("mileageAtService").value;
+  const remarks = document.getElementById("remarks").value.trim();
+
+  try {
+    let response;
+
+    if (editId) {
+      const updatePayload = {
+        totalCost,
+        serviceDate,
+        remarks: remarks || undefined,
+        mileageAtService: mileageRaw ? Number(mileageRaw) : undefined,
+        providerId: providerId || undefined
+      };
+
+      response = await fetch(`${API_BASE}/service-records/${editId}`, {
+        method: "PUT",
+        headers: authHeaders(true),
+        body: JSON.stringify(updatePayload)
+      });
+
+      editId = null;
+      formTitle.innerText = "Add Service Record";
+    } else {
+      const createPayload = {
+        vehicleId,
+        serviceTypeId,
+        providerId: providerId || undefined,
+        totalCost,
+        serviceDate,
+        remarks: remarks || undefined,
+        mileageAtService: mileageRaw ? Number(mileageRaw) : undefined
+      };
+
+      response = await fetch(`${API_BASE}/service-records`, {
+        method: "POST",
+        headers: authHeaders(true),
+        body: JSON.stringify(createPayload)
+      });
+    }
+
+    if (!response.ok) {
+      const data = await response.json();
+      alert(data.message || "Operation failed");
+      return;
+    }
+
+    form.reset();
+    loadRecords();
+  } catch (error) {
+    console.error("Save error:", error);
+  }
+});
+
+recordList.addEventListener("click", async function (e) {
+  const id = e.target.dataset.id;
+  if (!id) return;
+
+  if (e.target.classList.contains("delete-btn")) {
+    if (!confirm("Delete this record?")) return;
+
+    await fetch(`${API_BASE}/service-records/${id}`, {
+      method: "DELETE",
+      headers: authHeaders()
+    });
+
+    loadRecords();
+  }
+
+  if (e.target.classList.contains("edit-btn")) {
+    const response = await fetch(`${API_BASE}/service-records/${id}`, {
+      headers: authHeaders()
+    });
+
+    const record = await response.json();
+    if (!response.ok) {
+      alert(record.message || "Failed to load record");
+      return;
+    }
+
+    vehicleSelect.value = record.vehicle?._id || "";
+    serviceTypeSelect.value = record.serviceType?._id || "";
+    providerSelect.value = record.provider?._id || "";
+    document.getElementById("cost").value = record.totalCost ?? "";
+    document.getElementById("date").value = record.serviceDate ? new Date(record.serviceDate).toISOString().substring(0, 10) : "";
+    document.getElementById("mileageAtService").value = record.mileageAtService ?? "";
+    document.getElementById("remarks").value = record.remarks || "";
+
+    editId = id;
+    formTitle.innerText = "Edit Service Record";
+  }
+});
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("motosyncToken");
+  localStorage.removeItem("user");
+  localStorage.removeItem("motosyncUser");
+  window.location.href = "login.html";
+}
+
+Promise.all([loadVehicles(), loadServiceTypes(), loadProviders()])
+  .then(loadRecords)
+  .catch((error) => {
+    console.error("Init error:", error);
+    recordList.innerHTML = "<p>Failed to load vehicles/service-types/providers. Create those first.</p>";
+  });
+</script>
+<script src="ui.js"></script>
+</body>
+</html>

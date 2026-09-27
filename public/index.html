@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MotoSync | Smart Vehicle Maintenance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="modern.css" />
+</head>
+<body class="modern-page">
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo-link">
+        <div class="logo">
+          <span class="logo-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 17h14M7 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm14 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 17l2-7h6l2 7M9 10l-2-3m8 3 2-3"/>
+            </svg>
+          </span>
+          <span class="logo-text">
+            <strong>MotoSync</strong>
+            <small>Vehicle Maintenance & Service Tracker</small>
+          </span>
+        </div>
+      </a>
+
+      <nav class="nav-right">
+        <a href="#hero">Home</a>
+        
+        <a href="#how-it-works">Process</a>
+        <a href="about.html">About</a>
+        <a href="adminlogin.html" class="btn-login">Admin</a>
+        <a href="login.html" class="btn-login" id="navLogin">Login</a>
+        <a href="register.html" class="btn-register" id="navRegister">Register</a>
+        <button class="btn-login" id="navLogout" onclick="logout()" style="display:none;">Logout</button>
+        <div class="utility-menu">
+          <button class="btn-login" onclick="toggleUtilityMenu()">Utility</button>
+          <div id="utilityDropdown" class="utility-dropdown hidden">
+            <button onclick="openCalculator()">Calculator</button>
+            <button onclick="openCalendar()">Calendar</button>
+          </div>
+        </div>
+        <div id="profileIconContainer" style="display:none; float:right; margin-left:16px;">
+          <a href="user-dashboard.html" id="profileIconLink" title="My Account">
+            <img src="images/default-profile.svg" alt="Profile" style="width:36px;height:36px;border-radius:50%;box-shadow:0 1px 4px #ccc;vertical-align:middle;">
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="hero" class="hero">
+      <p class="eyebrow">Maintenance Intelligence For Cars and Bikes</p>
+      <div class="hero-content">
+        <div class="hero-left">
+          <h1>Keep every car and bike in your garage service-ready with zero guesswork.</h1>
+          <p>
+            Track service records, plan maintenance, and get proactive alerts before small issues become expensive repairs.
+            MotoSync connects your riding history with your next service action.
+          </p>
+
+          <div class="hero-buttons">
+            <a class="btn-primary" href="register.html">Start Tracking</a>
+            <a class="btn-ghost btn-primary" href="#features">View Features</a>
+          </div>
+        </div>
+
+        <aside class="hero-visual">
+          <div class="metric-grid">
+            <article class="metric-card float-delay-1">
+              <strong>Service Records</strong>
+              <p>Maintain full history with notes, mileage, and cost.</p>
+            </article>
+            <article class="metric-card float-delay-2">
+              <strong>Smart Alerts</strong>
+              <p>Never miss oil, chain, or brake maintenance windows.</p>
+            </article>
+            <article class="metric-card float-delay-3">
+              <strong>Provider Management</strong>
+              <p>Track trusted garages and service providers in one place.</p>
+            </article>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <h2 class="section-title">Core Features</h2>
+      <div class="features-grid">
+        <article class="feature-card">
+          <span class="feature-icon">⚙</span>
+          <h3>Centralized Records</h3>
+          <p>Save every maintenance event for each vehicle profile.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon">⏱</span>
+          <h3>Maintenance Timeline</h3>
+          <p>Visualize service intervals and future due items quickly.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon">📊</span>
+          <h3>Dashboard Insights</h3>
+          <p>Review trends in upkeep, frequency, and service spending.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon">🔔</span>
+          <h3>Due Alerts</h3>
+          <p>Receive reminders at the right time across all vehicles.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="section">
+      <h2 class="section-title">How It Works</h2>
+      <div class="steps-grid">
+        <article class="step-card">
+          <h3>1. Register Vehicle</h3>
+          <p>Create your account and add core vehicle details.</p>
+          <a class="btn-primary" href="register.html">Register Vehicle</a>
+        </article>
+        <article class="step-card">
+          <h3>2. Track Maintenance</h3>
+          <p>Log services and keep your maintenance record current.</p>
+          <a class="btn-primary" href="maintenance.html">Track Maintenance</a>
+        </article>
+        <article class="step-card">
+          <h3>3. View Reports</h3>
+          <p>Check status, upcoming needs, and service history.</p>
+          <a class="btn-primary" href="reports.html">View Reports</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="cta">
+      <h2>Build a cleaner service workflow for every ride.</h2>
+      <a class="btn-primary" href="register.html">Create MotoSync Account</a>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <footer class="footer">
+    <p>&copy; 2026 MotoSync. All Rights Reserved.</p>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="ui.js"></script>
+  <script src="script.js"></script>
+  <script src="calculator.js"></script>
+  <script>
+    updateNavbar();
+  </script>
+
+  
+  <div id="calculatorModal" class="calculator-modal hidden">
+    <div class="calculator">
+      <div class="calc-header">
+        <span>Calculator</span>
+        <button onclick="closeCalculator()">&times;</button>
+      </div>
+
+      <input type="text" id="calcDisplay" readonly aria-label="Calculator Display">
+
+      <div class="calc-buttons">
+        <button onclick="appendValue('7')">7</button>
+        <button onclick="appendValue('8')">8</button>
+        <button onclick="appendValue('9')">9</button>
+        <button onclick="appendValue('/')">&divide;</button>
+
+        <button onclick="appendValue('4')">4</button>
+        <button onclick="appendValue('5')">5</button>
+        <button onclick="appendValue('6')">6</button>
+        <button onclick="appendValue('*')">&times;</button>
+
+        <button onclick="appendValue('1')">1</button>
+        <button onclick="appendValue('2')">2</button>
+        <button onclick="appendValue('3')">3</button>
+        <button onclick="appendValue('-')">-</button>
+
+        <button onclick="appendValue('0')">0</button>
+        <button onclick="appendValue('.')">.</button>
+        <button onclick="calculate()">=</button>
+        <button onclick="appendValue('+')">+</button>
+
+        <button class="clear" onclick="clearDisplay()">C</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
